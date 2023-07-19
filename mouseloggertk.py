@@ -12,6 +12,7 @@ def getorigin(eventorigin):
       mouseClickY = eventorigin.y
       print(mouseClickX,mouseClickY)
 
+#note to self this works
 
 #create gui and place objects/buttons
 root = tk.Tk()

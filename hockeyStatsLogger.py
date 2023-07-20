@@ -28,18 +28,30 @@ def readRoster():
 def coordinateSaving():
     print(str(mouseClickX) + ', ' + str(mouseClickY))
 
-#function for creating buttons used for creating buttons for who scored
-def createButtonsRoster(window):
+#defining function to change values in player dictionary
+def addGoal(playerVar):
     for x in list_of_dict:
-        tk.Button(window, text=x['Player']).pack()
+        if x['Player'] == playerVar:
+            x['Goals'] = int(x['Goals'])
+            x['Goals'] += 1
+            print(x['Goals'])
+
+#function for creating buttons used for creating buttons for who scored
+def createButtonsRoster():
+    #create new Toplevel Window
+    newPlayerWindow = tk.Toplevel(root)
+    newPlayerWindow.title("Player Choice")
+    newPlayerWindow.geometry("200x200")
+    for x in list_of_dict:
+        playerButtons = tk.Button(newPlayerWindow, text=x['Player'], command=lambda m=x['Player']: addGoal(m)).pack()
         print(x)
 
 #create buttons for the different things to list after rink is pressed
 def createVariableButtons(window):
-    tk.Button(window, text='Goal', command=coordinateSaving).pack()
-    tk.Button(window, text='Shot', command=coordinateSaving).pack()
-    tk.Button(window, text='Hit', command=coordinateSaving).pack()
-    tk.Button(window, text='Penalty', command=coordinateSaving).pack()
+    tk.Button(window, text='Goal', command=createButtonsRoster).pack()
+    tk.Button(window, text='Shot', command=createButtonsRoster).pack()
+    tk.Button(window, text='Hit', command=createButtonsRoster).pack()
+    tk.Button(window, text='Penalty', command=createButtonsRoster).pack()
 
 #create a new window function for after rink is pressed
 def openRinkWindow():

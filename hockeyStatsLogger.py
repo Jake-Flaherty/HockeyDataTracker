@@ -70,4 +70,5 @@ root.geometry("700x500")
 img = ImageTk.PhotoImage(Image.open("./rink.jpg"))
 tk.Button(root, text = "Button", image = img, command=openRinkWindow).pack(side = 'top', pady=45)
 
+#ending the program
 root.mainloop()

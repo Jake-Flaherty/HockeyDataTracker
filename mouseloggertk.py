@@ -1,5 +1,7 @@
 import tkinter as tk
 from PIL import ImageTk, Image
+import csv
+import pandas as pd
 
 #define all functions needed here:
 
@@ -24,10 +26,23 @@ def openRinkWindow():
     # sets the geometry of toplevel
     newRinkWindow.geometry("200x200")
     # A Label widget to show in toplevel
-    tk.Label(newRinkWindow, text ="This is a new window").pack()
+    tk.Label(newRinkWindow, text ="This is a player on UNC's Hockey Team: " + list_of_dict[2]["Player"]).pack()
+
+#function for reading roster
+def readRoster():
+    #insert roster name as the file here add where you can do this in the app []
+    global list_of_dict
+    with open("./FakeUNCRoster.csv", 'r') as f:
+        dict_reader = csv.DictReader(f)
+        list_of_dict = list(dict_reader)
+        print(list_of_dict)
 
 #create gui and place objects/buttons
 root = tk.Tk()
+
+#roster is read using our script at the beginning of the 
+readRoster()
+#print(list_of_dict[1]["Player"])
 
 #if mouse button one is clicked log coordinates in console
 root.bind("<Button 1>",getorigin)

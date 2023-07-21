@@ -32,6 +32,24 @@ def coordinateSaving():
 
 ##defining function to change values in player dictionary
 
+#add assist function
+def addAssist(playerVar):
+    for x in list_of_dict:
+        if x['Player'] == playerVar:
+            x['A'] = int(x['A'])
+            x['A'] += 1
+            print(x['A'])
+
+def createButtonsRosterAssist():
+    #create new Toplevel Window
+    global newPlayerWindow
+    newPlayerWindow = tk.Toplevel(root)
+    newPlayerWindow.title("Player Choice")
+    newPlayerWindow.geometry("200x200")
+    for x in list_of_dict:
+        playerButtons = tk.Button(newPlayerWindow, text=x['Player'], command=lambda m=x['Player']: addAssist(m)).pack()
+        print(x)
+
 #add a way to write coordinates to a seperate file to look at shot selection []
 #add a writer for game by game saving using file naming using datetime []
 def addGoal(playerVar, typeVar):
@@ -64,7 +82,7 @@ def createButtonsRosterGoal(typeVar):
     newPlayerWindow.title("Player Choice")
     newPlayerWindow.geometry("200x200")
     for x in list_of_dict:
-        playerButtons = tk.Button(newPlayerWindow, text=x['Player'], command=lambda m=x['Player']: addGoal(m, typeVar)).pack()
+        playerButtons = tk.Button(newPlayerWindow, text=x['Player'], command=lambda m=x['Player']:[ addGoal(m, typeVar), createButtonsRosterAssist()]).pack()
         print(x)
     
 
@@ -95,6 +113,11 @@ def openRinkWindow():
 
 #save button for writing the changes to the csv roster file
 def saveAsCSV():
+    #final calculations for the file like p/gp and p and s%
+    for player in list_of_dict:
+        player['P'] = int(player['G']) + int(player['A'])
+
+    #write to the file
     CSVdf = pd.DataFrame(list_of_dict)
     CSVdf.to_csv('2023FakeUNCRosterStats.csv', index=False)
 

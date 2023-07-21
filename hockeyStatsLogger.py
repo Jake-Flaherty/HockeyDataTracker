@@ -2,6 +2,7 @@ import tkinter as tk
 from PIL import ImageTk, Image
 import csv
 import pandas as pd
+import os
 
 #define all functions needed here:
 
@@ -19,10 +20,10 @@ def getorigin(eventorigin):
 def readRoster():
     #insert roster name as the file here - add where you can do this in the app []
     global list_of_dict
-    with open("./FakeUNCRoster.csv", 'r') as f:
+    with open("./2023FakeUNCRosterStats.csv", 'r') as f:
         dict_reader = csv.DictReader(f)
         list_of_dict = list(dict_reader)
-        print(list_of_dict)
+        #print(list_of_dict)
 
 #filler functions for testing idea
 def coordinateSaving():
@@ -33,47 +34,69 @@ def coordinateSaving():
 
 #add a way to write coordinates to a seperate file to look at shot selection []
 #add a writer for game by game saving using file naming using datetime []
-def addGoal(playerVar):
+def addGoal(playerVar, typeVar):
     for x in list_of_dict:
         if x['Player'] == playerVar:
-            x['Goals'] = int(x['Goals'])
-            x['Goals'] += 1
-            print(x['Goals'])
+            x['G'] = int(x['G'])
+            x['G'] += 1
+            x[typeVar] = int(x[typeVar])
+            x[typeVar] += 1
+            print(x['G'])
+            print(x[typeVar])
+    newPlayerWindow.destroy()
 
+#make the window that shows up with goal window
+def whichGoalWindow():
+    global whichGoalWindow
+    whichGoalWindow = tk.Toplevel(root)
+    whichGoalWindow.title("What Type of Goal?")
+    whichGoalWindow.geometry("200x200")
+    tk.Button(whichGoalWindow, text="EVG", command=lambda typeVar="EVG": createButtonsRosterGoal(typeVar)).pack()
+    tk.Button(whichGoalWindow, text="PPG", command=lambda typeVar="PPG": createButtonsRosterGoal(typeVar)).pack()
+    tk.Button(whichGoalWindow, text="SHG", command=lambda typeVar="SHG": createButtonsRosterGoal(typeVar)).pack()
+    tk.Button(whichGoalWindow, text="OTG", command=lambda typeVar="OTG": createButtonsRosterGoal(typeVar)).pack()
 
 #function for creating buttons used for creating buttons for who scored
-def createButtonsRoster():
+def createButtonsRosterGoal(typeVar):
     #create new Toplevel Window
+    global newPlayerWindow
     newPlayerWindow = tk.Toplevel(root)
     newPlayerWindow.title("Player Choice")
     newPlayerWindow.geometry("200x200")
     for x in list_of_dict:
-        playerButtons = tk.Button(newPlayerWindow, text=x['Player'], command=lambda m=x['Player']: addGoal(m)).pack()
+        playerButtons = tk.Button(newPlayerWindow, text=x['Player'], command=lambda m=x['Player']: addGoal(m, typeVar)).pack()
         print(x)
+    
 
+#UNUSED FUNCTION!
 #create buttons for the different things to list after rink is pressed
-def createVariableButtons(window):
-    tk.Button(window, text='Goal', command=createButtonsRoster).pack()
-    tk.Button(window, text='Shot', command=createButtonsRoster).pack()
-    tk.Button(window, text='Hit', command=createButtonsRoster).pack()
-    tk.Button(window, text='Penalty', command=createButtonsRoster).pack()
+#def createVariableButtons(window):
+    #tk.Button(window, text='Goal', command=whichGoalWindow).pack()
+    #tk.Button(window, text='Shot', command=createButtonsRoster).pack()
+    #tk.Button(window, text='Hit', command=createButtonsRoster).pack()
+    #tk.Button(window, text='Penalty', command=createButtonsRoster).pack()
 
 #create a new window function for after rink is pressed
 def openRinkWindow():
     #Toplevel object which will be treated as a new window
+    global newRinkWindow
     newRinkWindow = tk.Toplevel(root)
     #sets the title of the Toplevel widget
     newRinkWindow.title("New Window")
     newRinkWindow.geometry("200x200")
     #use button create function to pack the window on the rink
-    createVariableButtons(newRinkWindow)
+    #createVariableButtons(newRinkWindow)
+    tk.Button(newRinkWindow, text='Goal', command=whichGoalWindow).pack()
+    tk.Button(newRinkWindow, text='Shot').pack()
+    tk.Button(newRinkWindow, text='Hit').pack()
+    tk.Button(newRinkWindow, text='Penalty').pack()
     #### A Label widget to show in toplevel
     ####tk.Label(newRinkWindow, text ="These are the players on UNC's Hockey Team: " + str(list(map(lambda rec: rec.get('Player'), list_of_dict)))).pack()
 
 #save button for writing the changes to the csv roster file
 def saveAsCSV():
     CSVdf = pd.DataFrame(list_of_dict)
-    CSVdf.to_csv('FakeUNCRoster.csv', index=False)
+    CSVdf.to_csv('2023FakeUNCRosterStats.csv', index=False)
 
 #create gui and place objects/buttons
 root = tk.Tk()

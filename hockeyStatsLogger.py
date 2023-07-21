@@ -28,13 +28,18 @@ def readRoster():
 def coordinateSaving():
     print(str(mouseClickX) + ', ' + str(mouseClickY))
 
-#defining function to change values in player dictionary
+
+##defining function to change values in player dictionary
+
+#add a way to write coordinates to a seperate file to look at shot selection []
+#add a writer for game by game saving using file naming using datetime []
 def addGoal(playerVar):
     for x in list_of_dict:
         if x['Player'] == playerVar:
             x['Goals'] = int(x['Goals'])
             x['Goals'] += 1
             print(x['Goals'])
+
 
 #function for creating buttons used for creating buttons for who scored
 def createButtonsRoster():
@@ -65,6 +70,11 @@ def openRinkWindow():
     #### A Label widget to show in toplevel
     ####tk.Label(newRinkWindow, text ="These are the players on UNC's Hockey Team: " + str(list(map(lambda rec: rec.get('Player'), list_of_dict)))).pack()
 
+#save button for writing the changes to the csv roster file
+def saveAsCSV():
+    CSVdf = pd.DataFrame(list_of_dict)
+    CSVdf.to_csv('FakeUNCRoster.csv', index=False)
+
 #create gui and place objects/buttons
 root = tk.Tk()
 
@@ -81,6 +91,7 @@ root.geometry("700x500")
 #create button with rink image on it
 img = ImageTk.PhotoImage(Image.open("./rink.jpg"))
 tk.Button(root, text = "Button", image = img, command=openRinkWindow).pack(side = 'top', pady=45)
+saveButton = tk.Button(root, text='SAVE', fg='white', bg='blue', command=saveAsCSV).pack(side='bottom')
 
 #ending the program
 root.mainloop()

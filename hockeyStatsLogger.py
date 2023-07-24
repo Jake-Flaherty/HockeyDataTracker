@@ -6,6 +6,16 @@ import os
 
 #define all functions needed here:
 
+#function for reading roster
+def readRoster():
+    #insert roster name as the file here - add where you can do this in the app []
+    global list_of_dict
+    with open("./2023FakeUNCRosterStats.csv", 'r') as f:
+        dict_reader = csv.DictReader(f)
+        list_of_dict = list(dict_reader)
+        #print(list_of_dict)
+
+
 #defining the function to get mouse click coords for shot tracking location
 mouseClickX = 0
 mouseClickY = 0
@@ -16,40 +26,11 @@ def getorigin(eventorigin):
     mouseClickY = eventorigin.y
     #print(mouseClickX,mouseClickY)
 
-#function for reading roster
-def readRoster():
-    #insert roster name as the file here - add where you can do this in the app []
-    global list_of_dict
-    with open("./2023FakeUNCRosterStats.csv", 'r') as f:
-        dict_reader = csv.DictReader(f)
-        list_of_dict = list(dict_reader)
-        #print(list_of_dict)
-
 #filler functions for testing idea
 def coordinateSaving():
     print(str(mouseClickX) + ', ' + str(mouseClickY))
 
-
 ##defining function to change values in player dictionary
-
-#add assist function
-def addAssist(playerVar):
-    for x in list_of_dict:
-        if x['Player'] == playerVar:
-            x['A'] = int(x['A'])
-            x['A'] += 1
-            print(x['A'])
-
-def createButtonsRosterAssist():
-    #create new Toplevel Window
-    global newPlayerWindow
-    newPlayerWindow = tk.Toplevel(root)
-    newPlayerWindow.title("Player Choice")
-    newPlayerWindow.geometry("200x200")
-    for x in list_of_dict:
-        playerButtons = tk.Button(newPlayerWindow, text=x['Player'], command=lambda m=x['Player']: addAssist(m)).pack()
-        print(x)
-
 #add a way to write coordinates to a seperate file to look at shot selection []
 #add a writer for game by game saving using file naming using datetime []
 def addGoal(playerVar, typeVar):
@@ -59,8 +40,40 @@ def addGoal(playerVar, typeVar):
             x['G'] += 1
             x[typeVar] = int(x[typeVar])
             x[typeVar] += 1
+            x['S'] = int(x['S'])
+            x['S'] += 1
             print(x['G'])
             print(x[typeVar])
+    newPlayerWindow.destroy()
+
+#function for adding a shot
+def addShot(playerVar):
+    for x in list_of_dict:
+        if x['Player'] == playerVar:
+            x['S'] = int(x['S'])
+            x['S'] += 1
+            print(x['S'])
+    newPlayerWindow.destroy()
+
+#add assist function
+def addAssist(playerVar):
+    assistCounter = 0
+    for x in list_of_dict:
+        if x['Player'] == playerVar:
+            x['A'] = int(x['A'])
+            x['A'] += 1
+            print(x['A'])
+            assistCounter += 1
+    if assistCounter >= 2:
+        newPlayerWindow.destroy()
+
+#add hit function
+def addHit(playerVar):
+    for x in list_of_dict:
+        if x['Player'] == playerVar:
+            x['H'] = int(x['H'])
+            x['H'] += 1
+            print(x['H'])
     newPlayerWindow.destroy()
 
 #make the window that shows up with goal window
@@ -74,6 +87,13 @@ def whichGoalWindow():
     tk.Button(whichGoalWindow, text="SHG", command=lambda typeVar="SHG": createButtonsRosterGoal(typeVar)).pack()
     tk.Button(whichGoalWindow, text="OTG", command=lambda typeVar="OTG": createButtonsRosterGoal(typeVar)).pack()
 
+#def howManyMins():
+#    global minsWindow
+#    minsWindow = tk.Toplevel(root)
+#    minsWindow.title("How long?")
+#    minsWindow.geometry("200x200")
+#    tk.Button(minsWindow, text='2')
+
 #function for creating buttons used for creating buttons for who scored
 def createButtonsRosterGoal(typeVar):
     #create new Toplevel Window
@@ -84,7 +104,38 @@ def createButtonsRosterGoal(typeVar):
     for x in list_of_dict:
         playerButtons = tk.Button(newPlayerWindow, text=x['Player'], command=lambda m=x['Player']:[ addGoal(m, typeVar), createButtonsRosterAssist()]).pack()
         print(x)
-    
+
+def createButtonsRosterAssist():
+    #create new Toplevel Window
+    global newPlayerWindow
+    newPlayerWindow = tk.Toplevel(root)
+    newPlayerWindow.title("Player Choice")
+    newPlayerWindow.geometry("200x200")
+    for x in list_of_dict:
+        playerButtons = tk.Button(newPlayerWindow, text=x['Player'], command=lambda m=x['Player']: addAssist(m)).pack()
+        print(x)
+
+#function for creating players assists
+def createButtonsRosterShot():
+    #create new Toplevel Window
+    global newPlayerWindow
+    newPlayerWindow = tk.Toplevel(root)
+    newPlayerWindow.title("Player Choice")
+    newPlayerWindow.geometry("200x200")
+    for x in list_of_dict:
+        playerButtons = tk.Button(newPlayerWindow, text=x['Player'], command=lambda m=x['Player']:[ addShot(m)]).pack()
+        print(x)
+
+#function for adding hits
+def createButtonsRosterHit():
+    #create new Toplevel Window
+    global newPlayerWindow
+    newPlayerWindow = tk.Toplevel(root)
+    newPlayerWindow.title("Player Choice")
+    newPlayerWindow.geometry("200x200")
+    for x in list_of_dict:
+        playerButtons = tk.Button(newPlayerWindow, text=x['Player'], command=lambda m=x['Player']:[ addHit(m)]).pack()
+        print(x)
 
 #UNUSED FUNCTION!
 #create buttons for the different things to list after rink is pressed
@@ -105,8 +156,8 @@ def openRinkWindow():
     #use button create function to pack the window on the rink
     #createVariableButtons(newRinkWindow)
     tk.Button(newRinkWindow, text='Goal', command=whichGoalWindow).pack()
-    tk.Button(newRinkWindow, text='Shot').pack()
-    tk.Button(newRinkWindow, text='Hit').pack()
+    tk.Button(newRinkWindow, text='Shot', command=createButtonsRosterShot).pack()
+    tk.Button(newRinkWindow, text='Hit', command=createButtonsRosterHit).pack()
     tk.Button(newRinkWindow, text='Penalty').pack()
     #### A Label widget to show in toplevel
     ####tk.Label(newRinkWindow, text ="These are the players on UNC's Hockey Team: " + str(list(map(lambda rec: rec.get('Player'), list_of_dict)))).pack()
@@ -116,6 +167,9 @@ def saveAsCSV():
     #final calculations for the file like p/gp and p and s%
     for player in list_of_dict:
         player['P'] = int(player['G']) + int(player['A'])
+
+    for player in list_of_dict:
+        player['S%'] = int(player['G'])/int(player['S'])
 
     #write to the file
     CSVdf = pd.DataFrame(list_of_dict)

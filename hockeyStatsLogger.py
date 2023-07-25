@@ -76,6 +76,15 @@ def addHit(playerVar):
             print(x['H'])
     newPlayerWindow.destroy()
 
+def addPen(playerVar, number):
+    for x in list_of_dict:
+        if x['Player'] == playerVar:
+            x['PEN'] = int(x['PEN'])
+            x['PEN'] += 1
+            x['PIM'] = int(x['PIM']) + number
+            print(x['PEN'])
+            print(x['PIM'])
+
 #make the window that shows up with goal window
 def whichGoalWindow():
     global whichGoalWindow
@@ -87,12 +96,14 @@ def whichGoalWindow():
     tk.Button(whichGoalWindow, text="SHG", command=lambda typeVar="SHG": createButtonsRosterGoal(typeVar)).pack()
     tk.Button(whichGoalWindow, text="OTG", command=lambda typeVar="OTG": createButtonsRosterGoal(typeVar)).pack()
 
-#def howManyMins():
-#    global minsWindow
-#    minsWindow = tk.Toplevel(root)
-#    minsWindow.title("How long?")
-#    minsWindow.geometry("200x200")
-#    tk.Button(minsWindow, text='2')
+def howManyMins():
+    global minsWindow
+    minsWindow = tk.Toplevel(root)
+    minsWindow.title("How long?")
+    minsWindow.geometry("200x200")
+    tk.Button(minsWindow, text='2', command=lambda number=2: createButtonsRosterPen(number)).pack()
+    tk.Button(minsWindow, text='5', command=lambda number=5: createButtonsRosterPen(number)).pack()
+    tk.Button(minsWindow, text='10', command=lambda number=10: createButtonsRosterPen(number)).pack()
 
 #function for creating buttons used for creating buttons for who scored
 def createButtonsRosterGoal(typeVar):
@@ -137,6 +148,16 @@ def createButtonsRosterHit():
         playerButtons = tk.Button(newPlayerWindow, text=x['Player'], command=lambda m=x['Player']:[ addHit(m)]).pack()
         print(x)
 
+def createButtonsRosterPen(number):
+    #create new Toplevel Window
+    global newPlayerWindow
+    newPlayerWindow = tk.Toplevel(root)
+    newPlayerWindow.title("Player Choice")
+    newPlayerWindow.geometry("200x200")
+    for x in list_of_dict:
+        playerButtons = tk.Button(newPlayerWindow, text=x['Player'], command=lambda m=x['Player']:[ addPen(m, number)]).pack()
+        print(x)
+
 #UNUSED FUNCTION!
 #create buttons for the different things to list after rink is pressed
 #def createVariableButtons(window):
@@ -158,7 +179,7 @@ def openRinkWindow():
     tk.Button(newRinkWindow, text='Goal', command=whichGoalWindow).pack()
     tk.Button(newRinkWindow, text='Shot', command=createButtonsRosterShot).pack()
     tk.Button(newRinkWindow, text='Hit', command=createButtonsRosterHit).pack()
-    tk.Button(newRinkWindow, text='Penalty').pack()
+    tk.Button(newRinkWindow, text='Penalty', command=howManyMins).pack()
     #### A Label widget to show in toplevel
     ####tk.Label(newRinkWindow, text ="These are the players on UNC's Hockey Team: " + str(list(map(lambda rec: rec.get('Player'), list_of_dict)))).pack()
 
@@ -169,7 +190,10 @@ def saveAsCSV():
         player['P'] = int(player['G']) + int(player['A'])
 
     for player in list_of_dict:
-        player['S%'] = int(player['G'])/int(player['S'])
+        if int(player['S']) > 0:
+            player['S%'] = int(player['G'])/int(player['S'])
+        else:
+            player['S%'] = 0
 
     #write to the file
     CSVdf = pd.DataFrame(list_of_dict)
